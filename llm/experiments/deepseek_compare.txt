@@ -1,0 +1,12 @@
+Feature                | model_deepseek.py    | DeepSeekMoE (v1)     | DeepSeek-V2           | DeepSeek-V3
+----------------------|----------------------|----------------------|-----------------------|-----------------------
+Attention Mechanism   | GQA                  | GQA / MHA            | MLA (Multi-Head       | MLA
+                     | (DeepSeekAttention)  |                      | Latent Attention)     |
+MoE Strategy         | Shared + Top-K       | Shared + Top-K       | Shared + Top-K Routed | Shared + Top-K Routed
+                     | Routed               | Routed               | (Device-limited)      |
+Load Balancing       | Auxiliary Loss + z-  | Auxiliary Loss + z-  | Auxiliary Loss        | Auxiliary-Loss-Free
+                     | Loss                 | Loss                 | (Device-level)        | (bias term)
+Multi-Token          | None                 | None                 | None                  | MTP modules
+Prediction           |                      |                      |                       |
+
+│ Summary: The model inherits the original DeepSeekMoE (v1) architecture (combining LLaMA-style GQA/RMSNorm/RoPE

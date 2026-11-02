@@ -1,0 +1,121 @@
+Lần 2 - lỡ xóa train lại
+
+>>> step 17000/17600 (ep 0.97) | val_ce 2.0061 | val_ppl 7.4
+step  17020/17600 | ep 0.97/1.0 | ce 1.9592 | aux 1.026 | lr 6.15e-05 | gn 0.35 | 34.9k tok/s | load max 0.16 min 0.099 ent 0.993 | 10.4GB | 08:56:00<18:15
+step  17040/17600 | ep 0.97/1.0 | ce 1.9518 | aux 1.026 | lr 6.14e-05 | gn 0.36 | 34.9k tok/s | load max 0.16 min 0.099 ent 0.994 | 10.4GB | 08:56:38<17:38
+step  17060/17600 | ep 0.97/1.0 | ce 1.9709 | aux 1.027 | lr 6.13e-05 | gn 0.36 | 35.4k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 08:57:15<17:00
+step  17080/17600 | ep 0.97/1.0 | ce 1.9509 | aux 1.027 | lr 6.12e-05 | gn 0.35 | 35.3k tok/s | load max 0.16 min 0.099 ent 0.994 | 10.4GB | 08:57:52<16:22
+step  17100/17600 | ep 0.97/1.0 | ce 1.9449 | aux 1.027 | lr 6.11e-05 | gn 0.35 | 35.3k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 08:58:29<15:44
+step  17120/17600 | ep 0.97/1.0 | ce 1.9475 | aux 1.025 | lr 6.11e-05 | gn 0.38 | 35.4k tok/s | load max 0.16 min 0.101 ent 0.994 | 10.4GB | 08:59:06<15:06
+step  17140/17600 | ep 0.97/1.0 | ce 1.9589 | aux 1.026 | lr 6.10e-05 | gn 0.35 | 35.7k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 08:59:43<14:29
+step  17160/17600 | ep 0.97/1.0 | ce 1.9513 | aux 1.027 | lr 6.09e-05 | gn 0.35 | 35.3k tok/s | load max 0.16 min 0.099 ent 0.993 | 10.4GB | 09:00:20<13:51
+step  17180/17600 | ep 0.98/1.0 | ce 1.9573 | aux 1.026 | lr 6.08e-05 | gn 0.34 | 35.7k tok/s | load max 0.16 min 0.099 ent 0.994 | 10.4GB | 09:00:57<13:13
+step  17200/17600 | ep 0.98/1.0 | ce 1.9580 | aux 1.027 | lr 6.07e-05 | gn 0.35 | 35.5k tok/s | load max 0.16 min 0.099 ent 0.993 | 10.4GB | 09:01:34<12:35
+step  17220/17600 | ep 0.98/1.0 | ce 1.9563 | aux 1.027 | lr 6.07e-05 | gn 0.36 | 35.2k tok/s | load max 0.16 min 0.100 ent 0.993 | 10.4GB | 09:02:11<11:57
+step  17240/17600 | ep 0.98/1.0 | ce 1.9412 | aux 1.028 | lr 6.06e-05 | gn 0.35 | 35.2k tok/s | load max 0.16 min 0.099 ent 0.994 | 10.4GB | 09:02:48<11:20
+step  17260/17600 | ep 0.98/1.0 | ce 1.9593 | aux 1.026 | lr 6.05e-05 | gn 0.36 | 35.3k tok/s | load max 0.16 min 0.101 ent 0.994 | 10.4GB | 09:03:26<10:42
+step  17280/17600 | ep 0.98/1.0 | ce 1.9550 | aux 1.026 | lr 6.05e-05 | gn 0.36 | 35.4k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 09:04:03<10:04
+step  17300/17600 | ep 0.98/1.0 | ce 1.9578 | aux 1.026 | lr 6.04e-05 | gn 0.36 | 35.4k tok/s | load max 0.16 min 0.101 ent 0.994 | 10.4GB | 09:04:40<09:26
+step  17320/17600 | ep 0.98/1.0 | ce 1.9602 | aux 1.028 | lr 6.04e-05 | gn 0.36 | 34.9k tok/s | load max 0.16 min 0.099 ent 0.993 | 10.4GB | 09:05:17<08:48
+step  17340/17600 | ep 0.98/1.0 | ce 1.9677 | aux 1.027 | lr 6.03e-05 | gn 0.35 | 34.9k tok/s | load max 0.16 min 0.099 ent 0.993 | 10.4GB | 09:05:55<08:11
+step  17360/17600 | ep 0.99/1.0 | ce 1.9448 | aux 1.026 | lr 6.03e-05 | gn 0.36 | 35.0k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 09:06:32<07:33
+step  17380/17600 | ep 0.99/1.0 | ce 1.9566 | aux 1.026 | lr 6.02e-05 | gn 0.36 | 34.9k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 09:07:10<06:55
+step  17400/17600 | ep 0.99/1.0 | ce 1.9537 | aux 1.026 | lr 6.02e-05 | gn 0.35 | 35.0k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 09:07:47<06:17
+step  17420/17600 | ep 0.99/1.0 | ce 1.9568 | aux 1.027 | lr 6.01e-05 | gn 0.36 | 35.0k tok/s | load max 0.16 min 0.099 ent 0.993 | 10.4GB | 09:08:25<05:40
+step  17440/17600 | ep 0.99/1.0 | ce 1.9529 | aux 1.027 | lr 6.01e-05 | gn 0.35 | 35.2k tok/s | load max 0.16 min 0.099 ent 0.993 | 10.4GB | 09:09:02<05:02
+step  17460/17600 | ep 0.99/1.0 | ce 1.9503 | aux 1.026 | lr 6.01e-05 | gn 0.35 | 35.3k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 09:09:39<04:24
+step  17480/17600 | ep 0.99/1.0 | ce 1.9502 | aux 1.026 | lr 6.01e-05 | gn 0.35 | 35.2k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 09:10:16<03:46
+step  17500/17600 | ep 0.99/1.0 | ce 1.9482 | aux 1.027 | lr 6.00e-05 | gn 0.38 | 35.3k tok/s | load max 0.16 min 0.099 ent 0.994 | 10.4GB | 09:10:54<03:08
+>>> step 17500/17600 (ep 0.99) | val_ce 2.0098 | val_ppl 7.5
+step  17520/17600 | ep 1.00/1.0 | ce 1.9458 | aux 1.027 | lr 6.00e-05 | gn 0.35 | 34.7k tok/s | load max 0.16 min 0.098 ent 0.993 | 10.4GB | 09:11:35<02:31
+step  17540/17600 | ep 1.00/1.0 | ce 1.9525 | aux 1.026 | lr 6.00e-05 | gn 0.35 | 34.3k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 09:12:13<01:53
+step  17560/17600 | ep 1.00/1.0 | ce 1.9420 | aux 1.027 | lr 6.00e-05 | gn 0.35 | 34.4k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 09:12:51<01:15
+step  17580/17600 | ep 1.00/1.0 | ce 1.9495 | aux 1.026 | lr 6.00e-05 | gn 0.35 | 35.4k tok/s | load max 0.16 min 0.100 ent 0.994 | 10.4GB | 09:13:28<00:37
+step  17600/17600 | ep 1.00/1.0 | ce 1.9467 | aux 1.027 | lr 6.00e-05 | gn 0.36 | 35.1k tok/s | load max 0.16 min 0.099 ent 0.994 | 10.4GB | 09:14:06<00:00
+======================================================================
+🎉 Training Completed Successfully!
+  Total Steps       : 17,600 steps
+  Total Tokens      : 1,153,433,600 tokens (1153.4M)
+  Accumulated Epochs: 1.00 epochs
+  Total Train Time  : 9h 14m 10s (9.24 hours)
+  Avg Throughput    : 34.7k tok/s
+  Peak VRAM Usage   : 10.38 GB (9.66 GiB)
+  Weights Saved At  : /home/dangnam/hand_ons/llm/checkpoints/pre_train/DeepSeek-MoE/DeepSeek-MoE_177M_pretrained_smollm.pt
+======================================================================
+
+
+ Your codebase uses Mixed Precision Training (AMP):
+  ──────
+  ### 1. Checkpoint Weights on Disk: float32 (FP32)
+
+  Every tensor inside DeepSeek-MoE_177M_pretrained_smollm.pt is stored in standard single-precision torch.float32:
+
+    embed_tokens.weight              : torch.float32, shape: [16384, 512]
+    layers.0.self_attn.q_proj.weight : torch.float32, shape: [512, 512]
+    ...
+  (This is why the checkpoint file is ~1.98 GB: 177M params in FP32 ≈ 708 MB, plus AdamW FP32 optimizer states ≈ 1.4
+  GB.)
+  ──────
+  ### 2. Runtime Computation: bfloat16 (BF16)
+
+  During training in Supervised_Fine_Tuning.py:406-407 (and inference in generate.py:46), matrix multiplications and
+  attention are cast on-the-fly to bfloat16:
+
+    with torch.autocast("cuda", dtype=torch.bfloat16):
+        out = model(x, y)
+
+
+  
+1. Saving Checkpoints in FP32 (Industry Standard for Training)
+
+Saving your weights and optimizer states in float32 on the disk is the safest way to train.
+• The Master Weights: During training, weights are updated by tiny increments. If you save them in 16-bit, those tiny updates get rounded down to zero (underflow), and your model stops learning. Keeping the "Master Weights" in FP32 protects your model from degrading.
+• The Optimizer States: AdamW must run in FP32. If you try to save AdamW states in 16-bit, the math breaks completely.
+• The Reality Check: When you see a "Qwen 8B that is only 4GB", that is a deployment/inference file. During the actual training phase inside Alibaba's labs, their training checkpoints were massive FP32 files just like yours!
+
+2. Runtime Computation in BF16 via Autocast (Modern Golden Standard)
+
+Using torch.autocast("cuda", dtype=torch.bfloat16) is exactly how state-of-the-art models are trained today. This is called Automatic Mixed Precision (AMP).
+• How it works behind the scenes: PyTorch temporarily clones your weights into bfloat16 right before massive matrix multiplications (like Attention or Linear layers) to make the GPU run at maximum speed and save VRAM.
+• Safety: It automatically keeps sensitive operations (like loss calculation, LayerNorm/RMSNorm, and your MoE Router/Gating functions) in float32 so the model doesn't crash or output NaN errors.
+
+Summary of your setup
+
+• Storage (Disk): Full precision (FP32) → High fidelity, no data loss.
+• Execution (GPU VRAM): Mixed precision (BF16 + FP32) → Maximum speed, lower VRAM usage.
+
+
+Chính xác 100%! Bạn đã đúc kết quy trình chuẩn của ngành AI cực kỳ chuẩn xác và cô đọng.
+Tóm tắt lại vòng đời của mô hình theo đúng 3 bước bạn vừa nêu:
+1. Pre-train (Huấn luyện sơ khởi): Dùng FP32 (hoặc Mixed Precision giữ Master Weights ở FP32) + kèm Optimizer states → Nặng nhất nhưng tạo nền móng (base) vững chắc nhất, không mất mát dữ liệu.
+2. Post-train (SFT / Dành cho Inference): Chuyển sang BF16 → Loại bỏ hoàn toàn các cấu phần phục vụ huấn luyện (như AdamW), ép file xuống 16-bit → Giảm dung lượng đi gấp 4-5 lần, chạy mượt mà, sẵn sàng làm chatbot.
+3. Deploy (Triển khai thực tế): Quantize (4-bit / 8-bit) → Nén siêu nhỏ để nhét vừa vào điện thoại, laptop bình dân hoặc tiết kiệm chi phí server.
+
+
+ Yes, exactly. Both your LLaMA and DeepSeek models use float32 by default for their parameter weights and optimizer
+  states.
+  ──────
+  ### How Both Models Are Initialized
+  In train.py:346-356:
+    # LLaMA-3:
+    raw_model = LlamaForCausalLM(cfg).to(dev)    # Defaults to torch.float32
+    
+    # DeepSeek-MoE:
+    raw_model = DeepSeekForCausalLM(cfg).to(dev) # Defaults to torch.float32
+  Neither model casts its weights to 16-bit via .to(torch.bfloat16) or .half(). Every layer (nn.Linear, nn.Embedding,
+  RMSNorm, and MoE routers) is created in full torch.float32.
+  ──────
+  ### Why Keeping float32 at First Train is Crucial for Precision
+
+  1. Prevents Gradient Underflow:
+  Small learning rates (e.g. 6 × 10⁻⁵) produce tiny weight updates Δw. In 16-bit (bfloat16 or float16), these tiny
+  updates can round down to zero, causing the model to stall or fail to learn subtle patterns.
+  2. AdamW Optimizer Precision:
+  The AdamW optimizer maintains two state buffers (exp_avg and exp_avg_sq) for every parameter in float32. This keeps
+  the momentum running averages mathematically stable throughout training.
+  3. Best of Both Worlds (Mixed Precision):
+      • Math Execution: Matrix multiplications run fast on Tensor Cores in bfloat16 via torch.autocast.
+      • Master Weights: Gradients are accumulated into the float32 master copy, preserving full numerical fidelity.
+  4. Checkpoints:
+  When saved to .pt, both models serialize their weights in float32 so no precision is lost between training and post-
+  training.

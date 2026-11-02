@@ -1,0 +1,8 @@
+*.pt
+*.pth
+*.safetensors
+
+*venv
+*__pycache__
+
+*data 

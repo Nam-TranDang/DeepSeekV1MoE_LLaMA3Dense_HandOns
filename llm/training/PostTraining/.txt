@@ -1,0 +1,59 @@
+  Here is the breakdown based on your hardware (NVIDIA GeForce RTX 5070 Ti 16 GB), your data in smoltalk_posttrain_raw,
+  and the script Supervised_Fine_Tuning.py:
+  ──────
+  ### 1. Estimated Runtime
+
+  Your training set train.bin contains 1,006,259,836 tokens (~1.006B tokens).
+  With default batch size 8, gradient accumulation 8, and context length 1024, the model processes 65,536 tokens/step at
+  an average throughput of ~34.7k tokens/s (observed on your RTX 5070 Ti).
+   Training Goal                                   │    Steps     │       Tokens Processed        │  Estimated Runtime
+  ─────────────────────────────────────────────────┼──────────────┼───────────────────────────────┼─────────────────────
+   Default SFT Budget (--max_steps 3000)           │ 3,000 steps  │ ~196.6M tokens (~0.20 epochs) │ ~1 hour 34 minutes
+   (Recommended)                                   │              │                               │
+   Moderate SFT (--max_steps 5000)                 │ 5,000 steps  │ ~327.7M tokens (~0.33 epochs) │ ~2 hours 37 minutes
+   Full 1 Epoch                                    │ 15,354 steps │  1.006B tokens (1.00 epoch)   │ ~8 hours 5 minutes
+  │ Tip
+  │ For SFT / Instruction Tuning, running 2,000 to 3,000 steps (~1.5 hours) is standard and usually sufficient for the
+  │ model to learn the ChatML dialogue format and instruction-following behavior without catastrophic forgetting of
+  │ pretraining knowledge.
+  ──────
+  ### 2. GPU VRAM Occupied
+
+  • Expected VRAM Usage: ~10.4 GB – 11.1 GB
+  • VRAM Percentage: ~65% – 70% of your RTX 5070 Ti (16 GB total)
+  • Headroom: You will have ~5 GB of free VRAM, meaning there is zero risk of CUDA Out-Of-Memory (OOM) errors under the
+  default batch_size=8, seq_len=1024, and bfloat16 precision.
+  ──────
+  ### 3. Overfitting Prevention & Early Stopping Analysis
+  #### Does the code have Early Stopping?
+  No. Currently, Supervised_Fine_Tuning.py:400-475 runs in a fixed loop for max_steps (for step in range(start,
+  args.max_steps)). It does not stop automatically if validation loss stops decreasing.
+
+  #### Does it save the Best Checkpoint?
+  No. It only saves checkpoints periodically (ckpt_interval=500) and at the final step (save(args.max_steps)). It does
+  not automatically track min_val_loss or save a dedicated _best.pt file.
+  #### What Overfitting Prevention is Present:
+  1. Periodic Validation Evaluation: Evaluates val_ce and val_ppl on val.bin (500k tokens) every 200 steps (--
+  eval_interval 200) and logs it to console and CSV so you can inspect convergence.
+  2. Weight Decay: AdamW applies L₂ regularization (weight_decay=0.1) on all 2D+ tensors (linear projections and
+  embeddings).
+  3. Gradient Clipping: clip_grad_norm_ with threshold 1.0 to prevent sudden loss spikes from destabilizing weights.
+  4. Cosine Learning Rate Decay with Warmup: Warmup for 100 steps, decaying smoothly down to 10% of peak LR
+  (min_lr_ratio=0.1).
+  5. MoE Load Balancing Loss: Keeps expert routing balanced to prevent expert collapse/over-specialization.
+  ──────
+  ### Launch Command
+
+  To start post-training with your DeepSeek-MoE checkpoint and the raw dataset:
+
+    /home/dangnam/venv/bin/python training/PostTraining/Supervised_Fine_Tuning.py \
+        --pretrained_ckpt checkpoints/pre_train/DeepSeek-MoE/DeepSeek-MoE_177M_pretrained_smollm.pt \
+        --data_dir /home/dangnam/hand_ons/llm/data/smoltalk_posttrain_raw \
+        --dataset_name smoltalk \
+        --batch_size 8 \
+        --grad_accum 8 \
+        --max_steps 3000 \
+        --lr 1e-4
+
+  (If you would like me to add early stopping with a configurable patience parameter and automatic _best.pt checkpoint
+  saving to Supervised_Fine_Tuning.py, let me know and I can update the script for you before you run it!)

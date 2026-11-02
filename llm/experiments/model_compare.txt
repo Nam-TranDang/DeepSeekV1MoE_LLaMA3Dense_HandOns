@@ -1,0 +1,102 @@
+
+Components                                             | LLaMA-3 Small (Dense)                                  | DeepSeek-MoE Small (Sparse)
+-------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------
+Embedding                                              | (vocab) 16, 384 × 512 (dim) = 𝟖.𝟑𝟗𝐌                   |(vocab) 16, 384 × 512 (dim)= 𝟖.𝟑𝟗𝐌
+Number of Layers                                       | 12 Layers (100% Dense)                                 | 12 Layers (1 Dense đầu + 11 MoE)
+Attention / layer                                      | GQA: 𝟎.𝟔𝟔𝐌                                            | GQA: 𝟎.𝟔𝟔𝐌
+FFN / layer                                            | SwiGLU: 𝟒.𝟕𝟐𝐌                                         | Layer 0: 4.72M (Dense)Layer 1–11: 14.16M (MoE)
+LM Head                                                | 0 (Weight-tied với Embedding)                          | 0 (Weight-tied với Embedding)
+Total Params                                           | 72,888,832 (~72.9M)                                    | 176,742,912 (~176.7M)
+Active/tokens                                          | 72,888,832 (~72.9M)                                    | 72,933,888 (~72.9M)
+──────
+### 1. LLaMA-3 Small:  ~72.9M params?
+
+: d_model = 512, n_layer = 12, n_head = 8, n_kv_head = 2, intermediate_size = 3072, vocab_size = 16384.
+
+#### A. Embedding & Output Head:
+
+• embed_tokens: 16, 384 × 512 = 8, 388, 608 params.
+• lm_head: use Weight Tying (lm_head.weight = embed_tokens.weight), share same mem - not cost much.
+• final_norm (RMSNorm): 512 params.
+
+#### B. Inside 1 Layer Transformer (LLaMA-3 Decoder Layer):
+
+Mỗi layer gồm 2 khối chính (không dùng bias trong toàn bộ Linear):
+
+1. Grouped-Query Attention (GQA 4:1):
+    • q_proj (512 × 512): 262, 144
+    • k_proj (128 × 512 — do 2 KV heads ×64 head_dim): 65, 536
+    • v_proj (128 × 512 — do 2 KV heads ×64 head_dim): 65, 536
+    • o_proj (512 × 512): 262, 144
+    • → Tổng Attention = 655, 360 tham số.
+2. SwiGLU MLP (intermediate_size = 3072):
+    • Khối SwiGLU cần 3 ma trận: down_proj(silu(gate_proj(x)) × up_proj(x))
+    • gate_proj (3072 × 512): 1, 572, 864
+    • up_proj (3072 × 512): 1, 572, 864
+    • down_proj (512 × 3072): 1, 572, 864
+    • → Tổng MLP = 3 × 1, 572, 864 = 4, 718, 592 tham số.
+3. 2 LayerNorms (RMSNorm): 512 + 512 = 1, 024 tham số.
+
+Tổng 1 Layer = 655, 360 + 4, 718, 592 + 1, 024 = 𝟓, 𝟑𝟕𝟒, 𝟗𝟕𝟔 tham số
+
+#### C. Tổng toàn mạng LLaMA-3:
+
+Total = Embedding (8,388,608) + [12 × 5, 374, 976] + Final Norm (512) = 𝟕𝟐, 𝟖𝟖𝟖, 𝟖𝟑𝟐 (~72.9M)
+──────
+### 2. Chi tiết DeepSeek-MoE Small: Tại sao ra ~176.7M Total nhưng chỉ ~72.9M Active?
+
+Cấu hình MoE: n_routed_experts = 8, num_experts_per_tok (top_k) = 2, n_shared_experts = 1, moe_intermediate_size = 1024, n_dense_first = 1.
+
+#### A. Layer 0 (Dense First Layer - Giữ ổn định ban đầu):
+
+Theo thiết kế của DeepSeek, layer đầu tiên không dùng MoE mà dùng Dense FFN với kích thước tương đương:
+
+dense\_intermediate\_size = (top\_k + n\_shared) × moe\_dim = (2 + 1) × 1024 = 3072
+
+→ Layer 0 giống hệt 1 layer của LLaMA-3: 5, 374, 976 tham số.
+
+#### B. 11 Layers MoE tiếp theo (Layers 1 đến 11):
+
+Trong mỗi Layer MoE:
+
+• Attention + 2 RMSNorm: Vẫn giữ nguyên = 𝟔𝟓𝟔, 𝟑𝟖𝟒 tham số.
+• Khối MoE:
+    1. Router Linear: 8 × 512 = 𝟒, 𝟎𝟗𝟔 tham số.
+    2. 1 Expert (SwiGLU với intermediate = 1024):
+        • 3 × (1024 × 512) = 𝟏, 𝟓𝟕𝟐, 𝟖𝟔𝟒 tham số.
+    3. 8 Routed Experts: 8 × 1, 572, 864 = 𝟏𝟐, 𝟓𝟖𝟐, 𝟗𝟏𝟐 tham số.
+    4. 1 Shared Expert (luôn chạy): 1 × 1, 572, 864 = 𝟏, 𝟓𝟕𝟐, 𝟖𝟔𝟒 tham số.
+
+    • → Tổng FFN của 1 Layer MoE = 4, 096 + 12, 582, 912 + 1, 572, 864 = 𝟏𝟒, 𝟏𝟓𝟗, 𝟖𝟕𝟐 tham số.
+
+
+Tổng 1 Layer MoE = 656, 384 + 14, 159, 872 = 𝟏𝟒, 𝟖𝟏𝟔, 𝟐𝟓𝟔 tham số
+
+#### C. Tổng toàn bộ mô hình DeepSeek-MoE:
+
+Total = Embedding (8,388,608) + Layer 0 (5,374,976) + [11 × 14, 816, 256] + Final Norm (512)
+
+𝐓𝐨𝐭𝐚𝐥 = 𝟏𝟕𝟔, 𝟕𝟒𝟐, 𝟗𝟏𝟐 (~176.7M tham số)
+──────
+### 3. Tại sao Active Params lại là 72.9M?
+
+Tại mỗi token đi qua 1 layer MoE, cơ chế định tuyến Top-2 chỉ đánh thức:
+
+• 1 Shared Expert (1.57M)
+• 2 Routed Experts được chọn (2 × 1.57M = 3.15M)
+• Router (0.004M)
+• → Số tham số FFN thực sự tham gia tính toán cho mỗi token là:
+
+1.57M + 3.15M + 0.004M ≈ 𝟒.𝟕𝟐𝐌
+
+(Con số 4.72M này hoàn toàn khớp với khối Dense FFN 4.72M của LLaMA-3!)
+
+Còn 6 Routed Experts còn lại (6 × 1.57M = 𝟗.𝟒𝟒𝐌 tham số/layer) sẽ nằm yên trong VRAM, hoàn toàn không tốn FLOPs tính toán.
+
+│ Important
+│ Ý nghĩa cốt lõi của cặp thiết kế này:
+│ Cả 2 mô hình LLaMA-3 (Dense) và DeepSeek-MoE (Sparse) được thiết lập để có cùng chi phí tính toán (FLOPs) trên mỗi token (~72.9M Active).
+│
+│ • LLaMA-3 chỉ có 72.9M dung lượng não bộ.
+│ • DeepSeek-MoE có tận 176.7M dung lượng não bộ để phân nhánh kiến thức, nhưng khi chạy forward/backward thì khối lượng phép tính nhân ma trận chỉ tương đương mô hình 72.
+│ 9M.

@@ -1,0 +1,138 @@
+ =========
+
+Recommended Selection & Execution Plan (24/Oct/2026)
+
+
+1. Pretraining Stage (Auto-complete / Next-Token Prediction)
+
+Use Cách A (4 shards):
+bash
+mkdir -p data/smollm_pretrain_raw
+
+# Download 4 shards (~600M tokens raw) ~4.5GB
+huggingface-cli download HuggingFaceTB/smollm-corpus \
+    --repo-type dataset \
+    --include "cosmopedia-v2/train-0000[0-3]-of-*.parquet" \
+    --local-dir data/smollm_pretrain_raw
+
+# Tokenize and cap at 500M tokens
+python prepare_data.py \
+    --dataset data/smollm_pretrain_raw \
+    --out data/smollm_500m \
+    --max_tokens 500000000 \
+    --val_tokens 500000 \
+    --tok_docs 50000
+Use code with caution.
+
+2. Post-Training Stage (SFT Instruct)
+
+Use data/all/*.parquet from SmolTalk:
+bash
+mkdir -p data/smoltalk_raw
+
+# Download the unified all mix (~2.11 GB)
+huggingface-cli download HuggingFaceTB/smoltalk \
+    --repo-type dataset \
+    --include "data/all/*.parquet" \
+    --local-dir data/smoltalk_posttrain_raw
+
+
+ ========
+ 
+ 
+ ### 1. CLI Tải Dữ Liệu Pretrain: HuggingFaceTB/smollm-corpus
+
+  │ Warning
+  │ Repo smollm-corpus chứa tổng cộng tới 252 tỷ tokens (hàng trăm GB nếu tải toàn bộ).
+  │ Để phục vụ mục tiêu ~500M đến 1B tokens cho bài toán của bạn, bạn chỉ cần tải vài shard parquet của nhánh cosmopedia-v2 (mỗi file parquet nặng
+  │ khoảng ~300–400 MB, chứa ~150M tokens).
+
+  #### Cách A: Tải 3 – 4 shards (~500M – 800M tokens, khuyên dùng)
+
+    # Tạo thư mục chứa
+    mkdir -p data/smollm_pretrain_raw
+    
+    # Tải 4 shards đầu tiên của subset cosmopedia-v2 (~600M tokens, dung lượng tải ~1.2 GB)
+    huggingface-cli download HuggingFaceTB/smollm-corpus \
+        --repo-type dataset \
+        --include "cosmopedia-v2/train-0000[0-3]-of-*.parquet" \
+        --local-dir data/smollm_pretrain_raw
+
+  #### Cách B: Hoặc tải toàn bộ nhánh cosmopedia-v2
+
+    huggingface-cli download HuggingFaceTB/smollm-corpus \
+        --repo-type dataset \
+        --include "cosmopedia-v2/*.parquet" \
+        --local-dir data/smollm_pretrain_raw
+
+  Sau khi tải xong, bạn chạy tokenize sang .bin:
+
+    python prepare_data.py \
+        --dataset data/smollm_pretrain_raw \
+        --out data/smollm_500m \
+        --max_tokens 500000000 \
+        --val_tokens 5000000 \
+        --tok_docs 50000
+  ──────
+  ### 2. CLI Tải Dữ Liệu Post-Training (SFT / Instruct): HuggingFaceTB/smoltalk
+
+  Bộ dữ liệu này gồm ~400k đoạn hội thoại chất lượng cao (multi-turn chat, reasoning, python) được chia thành các file parquet gọn gàng (~1 GB).
+
+    # Tạo thư mục chứa
+    mkdir -p data/smoltalk_raw
+    
+    # Tải toàn bộ dataset smoltalk
+    huggingface-cli download HuggingFaceTB/smoltalk \
+        --repo-type dataset \
+        --local-dir data/smoltalk_raw
+
+  #### Nếu chỉ muốn tải subset cụ thể trong smoltalk:
+
+  • Tập chat tổng hợp đa dạng nhất (all):
+
+    huggingface-cli download HuggingFaceTB/smoltalk \
+        --repo-type dataset \
+        --include "data/all/*.parquet" \
+        --local-dir data/smoltalk_raw
+
+  • Tập chuyên reasoning / giải thích từng bước:
+
+    huggingface-cli download HuggingFaceTB/smoltalk \
+        --repo-type dataset \
+        --include "data/smol-magpie-ultra/*" \
+        --local-dir data/smoltalk_raw
+
+────────────────────────────────────────────────────────────
+> 1. wait, if you provide the big dataset smollm-corpus and download just around some "shard" how can you ensure that the it worth to train? because
+  the actual data is 673GB too big. Because we just install small part of smollm dataset, are you sure that when i train on small shards, i could
+  receive 2 model that able to compare them ?
+  2. you mention for cosmopedia-v2/*.parquet, is this the subset inside the big 673GB of smollm? that you mention ?
+  answer briefly
+
+▸ Thought for 7s, 677 tokens
+
+  ### 1. Tải vài shards nhỏ có đủ tin cậy để so sánh 2 model không?
+
+  👉 Hoàn toàn đảm bảo và chuẩn khoa học:
+
+  • Phân phối đồng đều (I.I.D): Dữ liệu trong smollm-corpus đã được xáo trộn ngẫu nhiên (shuffled) trước khi chia thành các file parquet. Vài shard
+  (khoảng ~500M tokens) đã chứa đầy đủ và đa dạng các chủ đề: khoa học, xã hội, toán, code cơ bản.
+  • So sánh công bằng tuyệt đối: Cả 2 model (LLaMA Dense và DeepSeek-MoE) sẽ đọc chung từng token một từ cùng 1 file train.bin và đo trên cùng 1
+  file val.bin.
+  • Quy chuẩn nghiên cứu: Trong các bài báo LLM (như Hugging Face 1 Billion Token Challenge, Pythia Scaling), mức 500M – 1B tokens là chuẩn mực để
+  so sánh tốc độ hội tụ (loss curve) và năng lực biểu diễn của các kiến trúc nhỏ (~70M – 170M).
+  ──────
+  ### 2. cosmopedia-v2 có phải là subset nằm trong 673GB đó không?
+
+  👉 Đúng, chính xác 100%.
+
+  Repo HuggingFaceTB/smollm-corpus (tổng ~673GB) được chia thành 3 thư mục con:
+
+  1. cosmopedia-v2/ (~70GB, ~28 tỷ tokens): Sách giáo khoa, bài giảng chuẩn mực do Mixtral sinh ra (đây chính là subset sạch nhất ta đang dùng).
+  2. fineweb-edu-dedup/ (~580GB): Bài viết web giáo dục từ Common Crawl.
+  3. python-edu/ (~15GB): Mã nguồn Python.
+
+  Do đó, khi dùng cờ --include "cosmopedia-v2/...", bạn chỉ tải đúng một phần nhỏ của thư mục sách giáo khoa này, hoàn toàn không phải tải 673GB của
+  cả repo.
+
+

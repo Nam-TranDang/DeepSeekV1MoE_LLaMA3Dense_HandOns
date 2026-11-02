@@ -1,0 +1,116 @@
+code read nobin - only parquet look like 
+
+### PRE-TRAINING STAGE: 
+
+- Pre-training - model performs pure Causal Language Modeling (Next-Token Prediction) across raw, unstructured text.
+
+- No prompt templates or roles: Unlike Post-training (SFT/Instruction tuning) which requires <|im_start|>user
+/ <|im_start|>assistant tags and loss masking, pre-training simply concatenates raw documents separated by <|
+endoftext|>.
+
+- Binary Format (uint16): Token IDs are serialized into flat binary arrays (train.bin and val.bin) 
+--> Because vocab_size = 16,384 fits within 16 bits (0 to 65,535) --> each token is stored as a 2-byte integer (np.uint16).
+--> This allows the training loop to memory-map (np.memmap) gigabytes of data instantly with near-zero RAM
+footprint and no disk read bottlenecks.
+
+
+1. So pretrained data = pure causal - predict next token only 
+
+2. What is the tokenizers lib - Explain this short (the flow how data input and process inside)
+
+3. Which part on the code - make the CPU most stuck - base on the arg ? Tokenizer? Or the Data Loader?
+
+4. --max_tokens: Early-stopping token ceiling (0 = no limit). Use for what ?
+
+5. How the vocab is generated base on the --tok_docs: Number of documents sampled to train the tokenizer (default 30,000) - will this cover all vocab from the rest. And what are they mechanism
+
+6. How "load_dataset" HF work - tell in short.
+
+7. IS   • **L43-L50**: If path is a folder (like data/smollm_pretrain_raw), it uses recursive glob to find all data
+  files (*.parquet, *.jsonl, etc.) and loads them as a single unified dataset split. 
+Mean - it will glob find all files with extention  insde the data/smollm_pretrain_raw
+
+(!!!!!) 8. is Lines 53–61: Text Column Extractor depend on "parquet file define the collumn? How we can check the parquet and extract if the data is difference?
+
+9.
+
+(!!!!!) 2. How to evaluate the current model Weight?
+
+
+Create the "independent file" that allow to see how inside the "parquet" organized & not create any .bin file
+
+Explain the BPE - Tokenizer.
+
+
+- Arrange code in order - but remain the same logic (can we)? 
+
+- How it look inside the .bin + nobin only parquet
+
+
+
+  ### 1. Total Size of smoltalk_posttrain_raw
+
+  • Disk Size: 2.0 GB (~2.11 GB / 2,114,146,995 bytes)
+  • File Breakdown: 10 Parquet files
+      • test-00000-of-00001.parquet: 101 MB (54,948 conversations)
+      • train-00000 to train-00008: 9 shards × ~213 MB (~115,991 conversations each)
+  • Total Records: 1,098,865 conversations (~1.1 million dialogues, ~1 billion tokens)
+  ──────
+  ### 2. Estimated Time to Finish (--threads 4, --throttle_ms 10)
+  We ran a live benchmark on 3,000 samples from the dataset using 4 threads:
+  • Throughput: ~1,200 conversations/sec (~1.2M tokens/sec).
+   Mode / Target Tokens                                        │ Estimated Time                                              │ Resulting File Size
+  ─────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────
+   Validation split (500,000 tokens)                           │ ~1 – 2 seconds                                              │ ~1 MB (val.bin)
+   Small Test Run (--max_tokens 2000000)                       │ ~3 – 5 seconds                                              │ ~4 MB
+   Medium Test Run (--max_tokens 10000000)                     │ ~15 – 25 seconds                                            │ ~20 MB
+   Full Dataset (all 1.1M conversations, ~1B tokens)           │ ~15 – 20 minutes                                            │ ~2.0 GB (train.bin)
+  ──────
+  ### 3. Recommended Run Commands
+  #### Option A: Quick Verification Run (e.g., 2M tokens)
+  Finishes in under 5 seconds to verify everything end-to-end:
+
+    /home/dangnam/venv/bin/python /home/dangnam/hand_ons/llm/datasets/Prepare_Data_Post-train.py \
+      --dataset /home/dangnam/hand_ons/llm/data/smoltalk_posttrain_raw \
+      --tokenizer /home/dangnam/hand_ons/llm/data/smollm_pretrain_raw/tokenizer.json \
+      --out /home/dangnam/hand_ons/llm/data/smoltalk_posttrain_bin \
+      --threads 4 \
+      --throttle_ms 10 \
+      --val_tokens 200000 \
+      --max_tokens 2000000
+
+  #### Option B: Full Safe Run (Entire ~1.1M Conversations)
+
+  Processes the entire dataset safely in ~15–20 minutes without overloading the server:
+
+    /home/dangnam/venv/bin/python /home/dangnam/hand_ons/llm/datasets/Prepare_Data_Post-train.py \
+      --dataset /home/dangnam/hand_ons/llm/data/smoltalk_posttrain_raw \
+      --tokenizer /home/dangnam/hand_ons/llm/data/smollm_pretrain_raw/tokenizer.json \
+      --out /home/dangnam/hand_ons/llm/data/smoltalk_posttrain_bin \
+      --threads 4 \
+      --throttle_ms 10 \
+      --val_tokens 500000
+
+
+
+● Ran 6 commands (+1 · which conda; conda i... · /home/dangnam/venv/b... ×3 · ls -lhR /home/dangna...) (ctrl+o to expand)
+▸ Thought for 10s
+  ### 1. CPU & System Status from top
+
+  • Total Cores: 56 logical CPUs (2 sockets × 14 cores/socket × 2 threads/core, Intel Xeon E5-2680 v4 @ 2.40 GHz).
+  • System Load: Load average is ~2.70 – 3.20 with 95.5% idle CPU capacity.
+  • Memory: 64 GB total (~32.7 GB available).
+  • Active Tasks: 1 background Python process (~1 core) and 1 Airflow worker (~1 core) are running.
+  • CPU Allocation Advice: Since the machine is shared but mostly idle, allocating 8 threads (or up to 12 threads) will give maximum throughput without saturating cores or affecting other
+  background jobs.
+  ──────
+  ### 2. Readiness Check: Prepare_Data_Post-train.py
+
+  Result: The code is READY to run.
+  • Parquet Verification: The raw dataset at smoltalk_posttrain_raw contains 9 train Parquet shards and 1 test shard with the exact column schema required (messages, source).
+  • Tokenizer Compatibility: tokenizer.json was validated successfully:
+      • Vocab size: 16,384 (fits within uint16).
+      • Special tokens: <|endoftext|> (ID 0), <|im_start|> (ID 1), <|im_end|> (ID 2).
+  • Dry-Run Test: A test run (--preview 1) was executed and correctly parsed and tokenized the ChatML format without errors.
+  │ Note
+  │ Run using the virtual environment python at /home/dangnam/venv/bin/python (where pyarrow, tokenizers, datasets, and tqdm are installed) and supply the required --tokenizer flag.

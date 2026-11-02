@@ -1,0 +1,15 @@
+>>> step 17500/17600 (ep 0.99) | val_ce 2.0921 | val_ppl 8.1
+step  17520/17600 | ep 1.00/1.0 | ce 2.0543 | lr 6.00e-05 | gn 0.39 | 91.2k tok/s | 7.4GB | 03:31:18<00:57
+step  17540/17600 | ep 1.00/1.0 | ce 2.0778 | lr 6.00e-05 | gn 0.39 | 91.1k tok/s | 7.4GB | 03:31:33<00:43
+step  17560/17600 | ep 1.00/1.0 | ce 2.0589 | lr 6.00e-05 | gn 0.39 | 91.2k tok/s | 7.4GB | 03:31:47<00:28
+step  17580/17600 | ep 1.00/1.0 | ce 2.0668 | lr 6.00e-05 | gn 0.39 | 91.1k tok/s | 7.4GB | 03:32:01<00:14
+step  17600/17600 | ep 1.00/1.0 | ce 2.0682 | lr 6.00e-05 | gn 0.39 | 91.2k tok/s | 7.4GB | 03:32:16<00:00
+======================================================================
+🎉 Training Completed Successfully!
+  Total Steps       : 17,600 steps
+  Total Tokens      : 1,153,433,600 tokens (1153.4M)
+  Accumulated Epochs: 1.00 epochs
+  Total Train Time  : 3h 32m 17s (3.54 hours)
+  Avg Throughput    : 90.6k tok/s
+  Peak VRAM Usage   : 7.37 GB (6.86 GiB)
+  Weights Saved At  : /home/dangnam/hand_ons/llm/checkpoints/pre_train/LLaMA-3/LLaMA-3_73M_pretrained_smollm.pt
