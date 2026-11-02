@@ -1,0 +1,200 @@
+================================================================================
+KHẢO SÁT DỮ LIỆU POST-TRAINING (SFT / INSTRUCT) - NO BINARY EXPORT
+Đường dẫn dataset: data/smoltalk_posttrain_raw
+================================================================================
+-> Tìm thấy tổng cộng 10 file Parquet:
+   + Tập TRAIN : 9 files
+     * train-00000-of-00009.parquet (212.5 MB)
+     * train-00001-of-00009.parquet (212.8 MB)
+     * train-00002-of-00009.parquet (212.8 MB)
+     * ... và 6 file train khác
+   + Tập TEST/VAL: 1 files
+     * test-00000-of-00001.parquet (100.5 MB)
+
+--------------------------------------------------------------------------------
+1. CẤU TRÚC PARQUET SCHEMA (CÁC CỘT & KIỂU DỮ LIỆU):
+--------------------------------------------------------------------------------
+  • Cột 'messages': list<element: struct<content: string, role: string>>
+  • Cột 'source': string
+
+--------------------------------------------------------------------------------
+2. THỐNG KÊ SỐ LƯỢNG MẪU HỘI THOẠI (ROWS):
+--------------------------------------------------------------------------------
+  • Tổng số mẫu (All)   : 1,098,865 hội thoại
+  • Số mẫu Train        : 1,043,917 (95.0%)
+  • Số mẫu Test/Val     : 54,948 (5.0%)
+
+--------------------------------------------------------------------------------
+3. PHÂN BỐ NGUỒN DỮ LIỆU (SOURCE / SUBSET DISTRIBUTION):
+--------------------------------------------------------------------------------
+  (Lấy mẫu thống kê trên 170,939 dòng từ 2 files):
+    - smol-magpie-ultra               :   66,991 dòng ( 39.2%)
+    - numina-cot-100k                 :   17,360 dòng ( 10.2%)
+    - smol-summarize                  :   15,762 dòng (  9.2%)
+    - openhermes-100k                 :   15,641 dòng (  9.2%)
+    - apigen-80k                      :   13,613 dòng (  8.0%)
+    - smol-rewrite                    :    8,843 dòng (  5.2%)
+    - self-oss-instruct               :    7,852 dòng (  4.6%)
+    - metamathqa-50k                  :    7,676 dòng (  4.5%)
+    - smol-constraints                :    5,629 dòng (  3.3%)
+    - systemchats-30k                 :    5,620 dòng (  3.3%)
+    - explore-instruct-rewriting      :    5,006 dòng (  2.9%)
+    - longalign                       :      557 dòng (  0.3%)
+    - everyday-conversations          :      389 dòng (  0.2%)
+
+--------------------------------------------------------------------------------
+4. THÔNG TIN TOKENIZER PRETRAIN ĐƯỢC CHỈ ĐỊNH:
+--------------------------------------------------------------------------------
+  • File tokenizer   : data/smollm_pretrain_raw/tokenizer.json
+  • Vocab size       : 16,384
+  • ID <|endoftext|> : 0
+  • ID <|im_start|>  : 1
+  • ID <|im_end|>    : 2
+
+--------------------------------------------------------------------------------
+5. CHI TIẾT CÁC MẪU HỘI THOẠI (HIỂN THỊ 3 MẪU ĐẦU TIÊN):
+--------------------------------------------------------------------------------
+  Đang đọc mẫu từ: data/smoltalk_posttrain_raw/data/all/train-00000-of-00009.parquet
+
+================================================================================
+MẪU #1 | Nguồn: numina-cot-100k | Số lượt (messages): 2
+================================================================================
+[CÁC LƯỢT HỘI THOẠI GỐC (RAW TURNS)]:
+  Turn 1 [USER]:
+    The function \( g(x) \) satisfies the functional equation
+\[ g(x + y) = g(x) + g(y) \]
+for all real numbers \( x \) and \( y \), and it is given that \( g(3) = 4 \). Find \( g(10) \).
+
+  Turn 2 [ASSISTANT]:
+    Given the functional equation and the specific value \( g(3) = 4 \), we can find \( g(1) \) by using the equation multiple times:
+\[
+g(3) = g(2) + g(1)
+\]
+\[
+g(2) = g(1) + g(1) = 2g(1)
+\]
+Thus,
+\[
+4 = 2g(1) + g(1) = 3g(1)
+\]
+\[
+g(1) = \frac{4}{3}
+\]
+Now we can find \( g(10) \) using \( g(1) \):
+\[
+g... [còn tiếp]
+
+----------------------------------------
+[ĐỊNH DẠNG CHATML SẼ DÙNG ĐỂ TRAIN SFT]:
+----------------------------------------
+<|im_start|>user
+The function \( g(x) \) satisfies the functional equation
+\[ g(x + y) = g(x) + g(y) \]
+for all real numbers \( x \) and \( y \), and it is given that \( g(3) = 4 \). Find \( g(10) \).<|im_end|>
+<|im_start|>assistant
+Given the functional equation and the specific value \( g(3) = 4 \), we can find \( g(1) \) by using the equation multiple times:
+\[
+g(3) = g(2) + g(1)
+\]
+\[
+g(2) = g(1) + g(1) = 2g(1)
+\]
+Thus,
+\[
+4 = 2g(1) + g(1) = 3g(1)
+\]
+\[
+g(1) = \frac{4}{3}
+\]
+Now we can find \( g(10) \) using \( g(1) \):
+\[
+g(10) = 10g(1) = 10 \times \frac{4}{3} = \frac{40}{3}
+\]
+Hence, the 
+... [còn tiếp]
+----------------------------------------
+[PHÂN TÍCH TOKEN (Độ dài: 307 tokens)]:
+  Token IDs đầu tiên: [1, 356, 262, 201, 1129, 1107, 2656, 10, 321, 10, 90, 11, 2656, 11, 3880] ...
+  Token IDs kết thúc : ... [6540, 93, 11236, 6903, 21, 10606, 62, 872, 2, 0]
+
+================================================================================
+MẪU #2 | Nguồn: numina-cot-100k | Số lượt (messages): 2
+================================================================================
+[CÁC LƯỢT HỘI THOẠI GỐC (RAW TURNS)]:
+  Turn 1 [USER]:
+    Ben twice chooses a random integer between 1 and 60, inclusive. What is the probability that at least one of the numbers Ben chooses is a multiple of 4?
+
+  Turn 2 [ASSISTANT]:
+    First, we find the number of multiples of 4 between 1 and 60. The smallest multiple of 4 is $4 \times 1 = 4$ and the largest multiple of 4 within 60 is $4 \times 15 = 60$. Hence, there are 15 multiples of 4.
+
+The total number of integers between 1 to 60 is 60. Therefore, the number of integers that ... [còn tiếp]
+
+----------------------------------------
+[ĐỊNH DẠNG CHATML SẼ DÙNG ĐỂ TRAIN SFT]:
+----------------------------------------
+<|im_start|>user
+Ben twice chooses a random integer between 1 and 60, inclusive. What is the probability that at least one of the numbers Ben chooses is a multiple of 4?<|im_end|>
+<|im_start|>assistant
+First, we find the number of multiples of 4 between 1 and 60. The smallest multiple of 4 is $4 \times 1 = 4$ and the largest multiple of 4 within 60 is $4 \times 15 = 60$. Hence, there are 15 multiples of 4.
+
+The total number of integers between 1 to 60 is 60. Therefore, the number of integers that are not multiples of 4 is $60 - 15 = 45$.
+
+The probability that a single number chosen is not a mu
+... [còn tiếp]
+----------------------------------------
+[PHÂN TÍCH TOKEN (Độ dài: 277 tokens)]:
+  Token IDs đầu tiên: [1, 356, 262, 201, 14965, 9652, 1511, 7203, 261, 4533, 13657, 700, 621, 284, 11742] ...
+  Token IDs kết thúc : ... [93, 25, 6903, 8759, 10606, 201, 62, 63, 2, 0]
+
+================================================================================
+MẪU #3 | Nguồn: numina-cot-100k | Số lượt (messages): 2
+================================================================================
+[CÁC LƯỢT HỘI THOẠI GỐC (RAW TURNS)]:
+  Turn 1 [USER]:
+    Find all values of $x$ that satisfy the equation $|2x-5| = 3x + 1$.
+
+  Turn 2 [ASSISTANT]:
+    We can solve the equation $|2x-5| = 3x + 1$ by considering two cases for the absolute value.
+
+**Case 1**: When $2x - 5 \geq 0$, which simplifies to $x \geq \frac{5}{2}$.
+\[
+2x - 5 = 3x + 1
+\Rightarrow -x = 6
+\Rightarrow x = -6
+\]
+However, $x = -6$ does not satisfy $x \geq \frac{5}{2}$. Thus, no solu... [còn tiếp]
+
+----------------------------------------
+[ĐỊNH DẠNG CHATML SẼ DÙNG ĐỂ TRAIN SFT]:
+----------------------------------------
+<|im_start|>user
+Find all values of $x$ that satisfy the equation $|2x-5| = 3x + 1$.<|im_end|>
+<|im_start|>assistant
+We can solve the equation $|2x-5| = 3x + 1$ by considering two cases for the absolute value.
+
+**Case 1**: When $2x - 5 \geq 0$, which simplifies to $x \geq \frac{5}{2}$.
+\[
+2x - 5 = 3x + 1
+\Rightarrow -x = 6
+\Rightarrow x = -6
+\]
+However, $x = -6$ does not satisfy $x \geq \frac{5}{2}$. Thus, no solutions exist in this case.
+
+**Case 2**: When $2x - 5 < 0$, which implies $x < \frac{5}{2}$.
+\[
+-(2x-5) = 3x + 1
+\Rightarrow -2x + 5 = 3x + 1
+\Rightarrow 5x = 4
+\Rightarrow x = \frac{4}
+... [còn tiếp]
+----------------------------------------
+[PHÂN TÍCH TOKEN (Độ dài: 437 tokens)]:
+  Token IDs đầu tiên: [1, 356, 262, 201, 14875, 544, 1731, 299, 1780, 90, 6, 390, 3880, 91, 279] ...
+  Token IDs kết thúc : ... [282, 10700, 6264, 93, 9296, 4667, 10606, 9390, 2, 0]
+
+================================================================================
+TỔNG KẾT:
+  • Post-training dataset đã sẵn sàng tại: data/smoltalk_posttrain_raw
+  • Định dạng lưu trữ: Parquet (9 train shards, 1 test shards)
+  • Cột hội thoại: 'messages' chứa cấu trúc chuẩn list[dict(role, content)]
+================================================================================
