@@ -1,6 +1,4 @@
-*.pt
-*.pth
-*.safetensors
+
 
 *venv
 *__pycache__

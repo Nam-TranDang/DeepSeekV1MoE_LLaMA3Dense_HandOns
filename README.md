@@ -51,6 +51,9 @@ Bạn có thể chọn **Cách A** (tải offline về máy trước) hoặc **C
 ```bash
 # 1. Tải file Parquet về thư mục data/cosmopedia_raw (~600MB)
 huggingface-cli download HuggingFaceTB/cosmopedia-100k --repo-type dataset --local-dir data/cosmopedia_raw
+huggingface-cli download HuggingFaceTB/smollm-corpus     --repo-type dataset     --include "cosmopedia-v2/train-0000[0-3]-of-*.parquet"     --local-dir data/smollm_pretrain_raw
+huggingface-cli download HuggingFaceTB/smoltalk     --repo-type dataset     --include "data/all/*.parquet"     --local-dir data/smoltalk_posttrain_raw
+
 
 # 2. Train Tokenizer (16,384 vocab) & tokenize dữ liệu thành train.bin và val.bin
 python prepare_data.py --dataset data/cosmopedia_raw --out data/cosmopedia_raw
